@@ -408,6 +408,7 @@ EEToProfInterfaceImpl::EEToProfInterfaceImpl() :
     m_pCallback7(NULL),
     m_pCallback8(NULL),
     m_pCallback9(NULL),
+    m_pCallback10(NULL),
     m_hmodProfilerDLL(NULL),
     m_fLoadedViaAttach(FALSE),
     m_pProfToEE(NULL),
@@ -654,47 +655,44 @@ HRESULT EEToProfInterfaceImpl::CreateProfiler(
     m_hmodProfilerDLL = hmodProfilerDLL.Extract();
     hmodProfilerDLL = NULL;
 
-    // The profiler may optionally support ICorProfilerCallback3,4,5,6,7,8,9.  Let's check.
+    // The profiler may optionally support ICorProfilerCallback3,4,5,6,7,8,9,10.  Let's check.
 
-    ReleaseHolder<ICorProfilerCallback9> pCallback9;
+    ReleaseHolder<ICorProfilerCallback10> pCallback10;
     hr = m_pCallback2->QueryInterface(
-        IID_ICorProfilerCallback9,
-        (LPVOID *)&pCallback9);
-    if (SUCCEEDED(hr) && (pCallback9 != NULL))
+        IID_ICorProfilerCallback10,
+        (LPVOID *)&pCallback10);
+    if (SUCCEEDED(hr) && (pCallback10 != NULL))
     {
-        // Nifty.  Transfer ownership to this class
-        _ASSERTE(m_pCallback9 == NULL);
-        m_pCallback9 = pCallback9.Extract();
-        pCallback9 = NULL;
-
-        // And while we're at it, we must now also have an ICorProfilerCallback3,4,5,6,7,8
-        // due to inheritance relationship of the interfaces
-        _ASSERTE(m_pCallback8 == NULL);
-        m_pCallback8 = static_cast<ICorProfilerCallback8 *>(m_pCallback9);
-        m_pCallback8->AddRef();
-
-        _ASSERTE(m_pCallback7 == NULL);
-        m_pCallback7 = static_cast<ICorProfilerCallback7 *>(m_pCallback8);
-        m_pCallback7->AddRef();
-
-        _ASSERTE(m_pCallback6 == NULL);
-        m_pCallback6 = static_cast<ICorProfilerCallback6 *>(m_pCallback7);
-        m_pCallback6->AddRef();
-
-        _ASSERTE(m_pCallback5 == NULL);
-        m_pCallback5 = static_cast<ICorProfilerCallback5 *>(m_pCallback6);
-        m_pCallback5->AddRef();
-
-        _ASSERTE(m_pCallback4 == NULL);
-        m_pCallback4 = static_cast<ICorProfilerCallback4 *>(m_pCallback5);
-        m_pCallback4->AddRef();
-
-        _ASSERTE(m_pCallback3 == NULL);
-        m_pCallback3 = static_cast<ICorProfilerCallback3 *>(m_pCallback4);
-        m_pCallback3->AddRef();
+        _ASSERTE(m_pCallback10 == NULL);
+        m_pCallback10 = pCallback10.Extract();
+        pCallback10 = NULL;
     }
 
-    if (m_pCallback8 == NULL)
+    if (m_pCallback10 != NULL)
+    {
+        m_pCallback9 = static_cast<ICorProfilerCallback9 *>(m_pCallback10);
+        m_pCallback9->AddRef();
+    }
+    else
+    {
+        ReleaseHolder<ICorProfilerCallback9> pCallback9;
+        hr = m_pCallback2->QueryInterface(
+            IID_ICorProfilerCallback9,
+            (LPVOID *)&pCallback9);
+        if (SUCCEEDED(hr) && (pCallback9 != NULL))
+        {
+            _ASSERTE(m_pCallback9 == NULL);
+            m_pCallback9 = pCallback9.Extract();
+            pCallback9 = NULL;
+        }
+    }
+
+    if (m_pCallback9 != NULL)
+    {
+        m_pCallback8 = static_cast<ICorProfilerCallback8 *>(m_pCallback9);
+        m_pCallback8->AddRef();
+    }
+    else
     {
         ReleaseHolder<ICorProfilerCallback8> pCallback8;
         hr = m_pCallback2->QueryInterface(
@@ -702,37 +700,18 @@ HRESULT EEToProfInterfaceImpl::CreateProfiler(
             (LPVOID *)&pCallback8);
         if (SUCCEEDED(hr) && (pCallback8 != NULL))
         {
-            // Nifty.  Transfer ownership to this class
             _ASSERTE(m_pCallback8 == NULL);
             m_pCallback8 = pCallback8.Extract();
             pCallback8 = NULL;
-
-            // And while we're at it, we must now also have an ICorProfilerCallback3,4,5,6,7
-            // due to inheritance relationship of the interfaces
-
-            _ASSERTE(m_pCallback7 == NULL);
-            m_pCallback7 = static_cast<ICorProfilerCallback7 *>(m_pCallback8);
-            m_pCallback7->AddRef();
-
-            _ASSERTE(m_pCallback6 == NULL);
-            m_pCallback6 = static_cast<ICorProfilerCallback6 *>(m_pCallback7);
-            m_pCallback6->AddRef();
-
-            _ASSERTE(m_pCallback5 == NULL);
-            m_pCallback5 = static_cast<ICorProfilerCallback5 *>(m_pCallback6);
-            m_pCallback5->AddRef();
-
-            _ASSERTE(m_pCallback4 == NULL);
-            m_pCallback4 = static_cast<ICorProfilerCallback4 *>(m_pCallback5);
-            m_pCallback4->AddRef();
-
-            _ASSERTE(m_pCallback3 == NULL);
-            m_pCallback3 = static_cast<ICorProfilerCallback3 *>(m_pCallback4);
-            m_pCallback3->AddRef();
         }
     }
 
-    if (m_pCallback7 == NULL)
+    if (m_pCallback8 != NULL)
+    {
+        m_pCallback7 = static_cast<ICorProfilerCallback7 *>(m_pCallback8);
+        m_pCallback7->AddRef();
+    }
+    else
     {
         ReleaseHolder<ICorProfilerCallback7> pCallback7;
         hr = m_pCallback2->QueryInterface(
@@ -740,33 +719,18 @@ HRESULT EEToProfInterfaceImpl::CreateProfiler(
             (LPVOID *)&pCallback7);
         if (SUCCEEDED(hr) && (pCallback7 != NULL))
         {
-            // Nifty.  Transfer ownership to this class
             _ASSERTE(m_pCallback7 == NULL);
             m_pCallback7 = pCallback7.Extract();
             pCallback7 = NULL;
-
-            // And while we're at it, we must now also have an ICorProfilerCallback3,4,5,6
-            // due to inheritance relationship of the interfaces
-
-            _ASSERTE(m_pCallback6 == NULL);
-            m_pCallback6 = static_cast<ICorProfilerCallback6 *>(m_pCallback7);
-            m_pCallback6->AddRef();
-
-            _ASSERTE(m_pCallback5 == NULL);
-            m_pCallback5 = static_cast<ICorProfilerCallback5 *>(m_pCallback6);
-            m_pCallback5->AddRef();
-
-            _ASSERTE(m_pCallback4 == NULL);
-            m_pCallback4 = static_cast<ICorProfilerCallback4 *>(m_pCallback5);
-            m_pCallback4->AddRef();
-
-            _ASSERTE(m_pCallback3 == NULL);
-            m_pCallback3 = static_cast<ICorProfilerCallback3 *>(m_pCallback4);
-            m_pCallback3->AddRef();
         }
     }
 
-    if (m_pCallback6 == NULL)
+    if (m_pCallback7 != NULL)
+    {
+        m_pCallback6 = static_cast<ICorProfilerCallback6 *>(m_pCallback7);
+        m_pCallback6->AddRef();
+    }
+    else
     {
         ReleaseHolder<ICorProfilerCallback6> pCallback6;
         hr = m_pCallback2->QueryInterface(
@@ -774,29 +738,18 @@ HRESULT EEToProfInterfaceImpl::CreateProfiler(
             (LPVOID *)&pCallback6);
         if (SUCCEEDED(hr) && (pCallback6 != NULL))
         {
-            // Nifty.  Transfer ownership to this class
             _ASSERTE(m_pCallback6 == NULL);
             m_pCallback6 = pCallback6.Extract();
             pCallback6 = NULL;
-
-            // And while we're at it, we must now also have an ICorProfilerCallback3,4,5
-            // due to inheritance relationship of the interfaces
-
-            _ASSERTE(m_pCallback5 == NULL);
-            m_pCallback5 = static_cast<ICorProfilerCallback5 *>(m_pCallback6);
-            m_pCallback5->AddRef();
-
-            _ASSERTE(m_pCallback4 == NULL);
-            m_pCallback4 = static_cast<ICorProfilerCallback4 *>(m_pCallback5);
-            m_pCallback4->AddRef();
-
-            _ASSERTE(m_pCallback3 == NULL);
-            m_pCallback3 = static_cast<ICorProfilerCallback3 *>(m_pCallback4);
-            m_pCallback3->AddRef();
         }
     }
-        
-    if (m_pCallback5 == NULL)
+
+    if (m_pCallback6 != NULL)
+    {
+        m_pCallback5 = static_cast<ICorProfilerCallback5 *>(m_pCallback6);
+        m_pCallback5->AddRef();
+    }
+    else
     {
         ReleaseHolder<ICorProfilerCallback5> pCallback5;
         hr = m_pCallback2->QueryInterface(
@@ -804,24 +757,18 @@ HRESULT EEToProfInterfaceImpl::CreateProfiler(
             (LPVOID *) &pCallback5);
         if (SUCCEEDED(hr) && (pCallback5 != NULL))
         {
-            // Nifty.  Transfer ownership to this class
             _ASSERTE(m_pCallback5 == NULL);
             m_pCallback5 = pCallback5.Extract();
             pCallback5 = NULL;
-
-            // And while we're at it, we must now also have an ICorProfilerCallback3, and
-            // ICorProfilerCallback4 due to inheritance relationship of the interfaces
-            _ASSERTE(m_pCallback4 == NULL);
-            m_pCallback4 = static_cast<ICorProfilerCallback4 *>(m_pCallback5);
-            m_pCallback4->AddRef();
-
-            _ASSERTE(m_pCallback3 == NULL);
-            m_pCallback3 = static_cast<ICorProfilerCallback3 *>(m_pCallback4);
-            m_pCallback3->AddRef();
         }
     }
 
-    if (m_pCallback4 == NULL)
+    if (m_pCallback5 != NULL)
+    {
+        m_pCallback4 = static_cast<ICorProfilerCallback4 *>(m_pCallback5);
+        m_pCallback4->AddRef();
+    }
+    else
     {
         ReleaseHolder<ICorProfilerCallback4> pCallback4;
         hr = m_pCallback2->QueryInterface(
@@ -829,20 +776,18 @@ HRESULT EEToProfInterfaceImpl::CreateProfiler(
             (LPVOID *) &pCallback4);
         if (SUCCEEDED(hr) && (pCallback4 != NULL))
         {
-            // Nifty.  Transfer ownership to this class
             _ASSERTE(m_pCallback4 == NULL);
             m_pCallback4 = pCallback4.Extract();
             pCallback4 = NULL;
-
-            // And while we're at it, we must now also have an ICorProfilerCallback3, and
-            // due to inheritance relationship of the interfaces
-            _ASSERTE(m_pCallback3 == NULL);
-            m_pCallback3 = static_cast<ICorProfilerCallback3 *>(m_pCallback4);
-            m_pCallback3->AddRef();
         }
     }
 
-    if (m_pCallback3 == NULL)
+    if (m_pCallback4 != NULL)
+    {
+        m_pCallback3 = static_cast<ICorProfilerCallback3 *>(m_pCallback4);
+        m_pCallback3->AddRef();
+    }
+    else
     {
         ReleaseHolder<ICorProfilerCallback3> pCallback3;
         hr = m_pCallback2->QueryInterface(
@@ -850,7 +795,6 @@ HRESULT EEToProfInterfaceImpl::CreateProfiler(
             (LPVOID *) &pCallback3);
         if (SUCCEEDED(hr) && (pCallback3 != NULL))
         {
-            // Nifty.  Transfer ownership to this class
             _ASSERTE(m_pCallback3 == NULL);
             m_pCallback3 = pCallback3.Extract();
             pCallback3 = NULL;
@@ -905,7 +849,7 @@ EEToProfInterfaceImpl::~EEToProfInterfaceImpl()
             m_pCallback2 = NULL;
         }
 
-        BOOL fIsV4Profiler = (m_pCallback3 != NULL);
+        BOOL fIsV4Profiler = m_pCallback3 != NULL;
 
         if (fIsV4Profiler)
         {
@@ -947,6 +891,12 @@ EEToProfInterfaceImpl::~EEToProfInterfaceImpl()
         {
             m_pCallback9->Release();
             m_pCallback9 = NULL;
+        }
+
+        if (m_pCallback10 != NULL)
+        {
+            m_pCallback10->Release();
+            m_pCallback10 = NULL;
         }
 
         // Only unload the V4 profiler if this is not part of shutdown.  This protects
@@ -6306,6 +6256,41 @@ HRESULT EEToProfInterfaceImpl::GetAssemblyReferences(LPCWSTR wszAssemblyPath, IA
 
 
     return hr;
+}
+
+HRESULT EEToProfInterfaceImpl::EventPipeEventDelivered(
+    LPCWSTR eventName,
+    DWORD eventId,
+    DWORD eventVersion,
+    ULONG cbMetadataBlob,
+    LPCBYTE metadataBlob,
+    DWORD eventThreadId,
+    const LARGE_INTEGER* eventTimestamp,
+    ULONG cbEventData,
+    LPCBYTE eventData,
+    ULONG numStackFrames,
+    UINT_PTR stackFrames[])
+{
+    CONTRACTL
+    {
+        NOTHROW;
+        GC_NOTRIGGER;
+        MODE_ANY;
+    }
+    CONTRACTL_END;
+
+    CLR_TO_PROFILER_ENTRYPOINT_EX(
+        kEE2PNoTrigger,
+        (LF_CORPROF,
+        LL_INFO1000,
+        "**PROF: EventPipeEventDelivered.\n"));
+
+    if (m_pCallback10 == NULL)
+    {
+        return S_OK;
+    }
+
+    return m_pCallback10->EventPipeEventDelivered(eventName, eventId, eventVersion, cbMetadataBlob, metadataBlob, eventThreadId, eventTimestamp, cbEventData, eventData, numStackFrames, stackFrames);
 }
 
 

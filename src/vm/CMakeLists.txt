@@ -333,6 +333,7 @@ set(VM_SOURCES_WKS
     eventpipejsonfile.cpp
     eventpipemetadatagenerator.cpp
     eventpipeprotocolhelper.cpp
+    eventpipeprofilerapi.cpp
     eventpipeprovider.cpp
     eventpipethread.cpp
     eventpipebuffer.cpp
