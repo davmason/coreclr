@@ -676,6 +676,11 @@ VOID FinalizerThread::FinalizerThreadWorker(void *args)
         // consider itself satisfied by the drain that just completed.  This is
         // acceptable.
         SignalFinalizationDone(TRUE);
+
+        // TODO: REMOVE THIS! Just for testing that the codepath works
+        MethodDescCallSite doGen2Notification(METHOD__GC__DO_GEN2_NOTIFICATION);
+        BOOL val = doGen2Notification.Call_RetBool((ARG_SLOT *)NULL);
+        // TODO: REMOVE THIS!
     }
 }
 
