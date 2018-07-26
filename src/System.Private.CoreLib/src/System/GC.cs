@@ -58,6 +58,13 @@ namespace System
         NotApplicable = 4
     }
 
+    // return true to indicate you want to proceed with a full GC;
+    // return false to indicate you don't
+    // Note that even in the case of true, if a full GC was already done while
+    // the callback is in progress, it may not be triggered again.
+    // GC will only trigger a full blocking GC if it's really running out of memory.
+    public delegate bool FullGCCallback();
+
     public static class GC
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -359,6 +366,14 @@ namespace System
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         private static extern int _WaitForFullGCComplete(int millisecondsTimeout);
 
+        public static void RegisterForFullGCNotification(FullGCCallback callback)
+        {
+            lock (s_FullGCCallbackLock)
+            {
+                s_FullGCCallback += callback;
+            }
+        }
+
         public static void RegisterForFullGCNotification(int maxGenerationThreshold, int largeObjectHeapThreshold)
         {
             if ((maxGenerationThreshold <= 0) || (maxGenerationThreshold >= 100))
@@ -434,6 +449,29 @@ namespace System
             NotInProgress = 1,
             GCInduced = 2,
             AllocationExceeded = 3
+        }
+
+        private static readonly object s_FullGCCallbackLock = new object();
+        private static FullGCCallback s_FullGCCallback;
+
+        private static bool DoGen2Notification()
+        {
+            FullGCCallback callback = s_FullGCCallback;
+
+            if (callback == null)
+            {
+                return true;
+            }
+            else
+            {
+                bool shouldProceed = false;
+                foreach (FullGCCallback cb in callback.GetInvocationList())
+                {
+                    shouldProceed |= cb();
+                }
+
+                return shouldProceed;
+            }
         }
 
         private static bool StartNoGCRegionWorker(long totalSize, bool hasLohSize, long lohSize, bool disallowFullBlockingGC)

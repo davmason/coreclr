@@ -976,6 +976,7 @@ DEFINE_CLASS(GC,                    System,                 GC)
 DEFINE_METHOD(GC,                   KEEP_ALIVE,             KeepAlive,                  SM_Obj_RetVoid)
 DEFINE_METHOD(GC,                   COLLECT,                Collect,                    SM_RetVoid)
 DEFINE_METHOD(GC,                   WAIT_FOR_PENDING_FINALIZERS, WaitForPendingFinalizers, SM_RetVoid)
+DEFINE_METHOD(GC,                   DO_GEN2_NOTIFICATION,   DoGen2Notification,         SM_RetBool)
 
 DEFINE_CLASS_U(System,                 WeakReference,          WeakReferenceObject)
 DEFINE_FIELD_U(m_handle,               WeakReferenceObject,    m_Handle)
