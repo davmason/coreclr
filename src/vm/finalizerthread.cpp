@@ -680,6 +680,14 @@ VOID FinalizerThread::FinalizerThreadWorker(void *args)
         // TODO: REMOVE THIS! Just for testing that the codepath works
         MethodDescCallSite doGen2Notification(METHOD__GC__DO_GEN2_NOTIFICATION);
         BOOL val = doGen2Notification.Call_RetBool((ARG_SLOT *)NULL);
+        if (val == TRUE)
+        {
+            OutputDebugStringW(L"val is true\n");
+        }
+        else
+        {
+            OutputDebugStringW(L"val is false\n");
+        }
         // TODO: REMOVE THIS!
     }
 }

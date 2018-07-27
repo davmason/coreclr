@@ -456,20 +456,24 @@ namespace System
 
         private static bool DoGen2Notification()
         {
+            Debug.WriteLine("In callback!");
             FullGCCallback callback = s_FullGCCallback;
 
             if (callback == null)
             {
+                Debug.WriteLine("Callback is null!");
                 return true;
             }
             else
             {
+                Debug.WriteLine("Callback is not null!");
                 bool shouldProceed = false;
                 foreach (FullGCCallback cb in callback.GetInvocationList())
                 {
                     shouldProceed |= cb();
                 }
 
+                Debug.WriteLine($"Callback returned {shouldProceed}!");
                 return shouldProceed;
             }
         }
