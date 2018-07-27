@@ -37,6 +37,9 @@ public:
     // post-gc callback.
     static void GcDone(int condemned);
 
+    // Inform the EE that a gen2 is pending
+    static void SetGen2Pending();
+
     // Promote refcounted handle callback
     static bool RefCountedHandleCallbacks(Object * pObject);
 

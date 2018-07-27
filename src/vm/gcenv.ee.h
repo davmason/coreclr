@@ -24,6 +24,7 @@ public:
     void AfterGcScanRoots(int condemned, int max_gen, ScanContext* sc);
     void GcBeforeBGCSweepWork();
     void GcDone(int condemned);
+    void SetGen2Pending();
     bool RefCountedHandleCallbacks(Object * pObject);
     void SyncBlockCacheWeakPtrScan(HANDLESCANPROC scanProc, uintptr_t lp1, uintptr_t lp2);
     void SyncBlockCacheDemote(int max_gen);

@@ -244,6 +244,18 @@ void GCToEEInterface::GcDone(int condemned)
 #endif // FEATURE_COMINTEROP
 }
 
+void GCToEEInterface::SetGen2Pending()
+{
+    CONTRACTL
+    {
+        NOTHROW;
+        GC_NOTRIGGER;
+    }
+    CONTRACTL_END;
+
+    g_fGen2GCPending = TRUE;
+}
+
 bool GCToEEInterface::RefCountedHandleCallbacks(Object * pObject)
 {
     CONTRACTL

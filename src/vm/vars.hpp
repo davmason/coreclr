@@ -475,6 +475,8 @@ extern int g_IGCHoardVM;
 extern int g_IGCTrimCommit;
 #endif
 
+extern Volatile<BOOL> g_fGen2GCPending;
+
 extern BOOL g_fEnableETW;
 extern BOOL g_fEnableARM;
 

@@ -150,18 +150,27 @@ void GCToEEInterface::GcScanRoots(promote_func* fn,  int condemned, int max_gen,
 
 void GCToEEInterface::GcStartWork(int condemned, int max_gen)
 {
+    
 }
 
 void GCToEEInterface::AfterGcScanRoots(int condemned, int max_gen, ScanContext* sc)
 {
+
 }
 
 void GCToEEInterface::GcBeforeBGCSweepWork()
 {
+
 }
 
 void GCToEEInterface::GcDone(int condemned)
 {
+
+}
+
+void GCToEEInterface::SetGen2Pending()
+{
+
 }
 
 bool GCToEEInterface::RefCountedHandleCallbacks(Object * pObject)

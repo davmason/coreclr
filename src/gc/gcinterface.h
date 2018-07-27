@@ -738,6 +738,9 @@ public:
     // Tells the GC how many YieldProcessor calls are equal to one scaled yield processor call.
     virtual void SetYieldProcessorScalingFactor(uint32_t yieldProcessorScalingFactor) = 0;
 
+    // Tells the GC whether it should proceed with the blocking Gen2 collection.
+    virtual void ShouldProceedWithFullGen2(bool fProceed) = 0;
+
     /*
     ============================================================================
     Add/RemoveMemoryPressure support routines. These are on the interface

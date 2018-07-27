@@ -201,6 +201,9 @@ public:
     virtual
     void GcDone(int condemned) = 0;
 
+    virtual
+    void SetGen2Pending() = 0;
+
     // Predicate for the GC to query whether or not a given refcounted handle should
     // be promoted.
     virtual

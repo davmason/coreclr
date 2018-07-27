@@ -563,6 +563,27 @@ VOID FinalizerThread::FinalizerThreadWorker(void *args)
 
         WaitForFinalizerEvent (hEventFinalizer);
 
+        if (g_fGen2GCPending == FALSE)
+        {
+            MethodDescCallSite doGen2Notification(METHOD__GC__DO_GEN2_NOTIFICATION);
+            BOOL shouldProceed = doGen2Notification.Call_RetBool((ARG_SLOT *)NULL);
+
+            GCHeapUtilities::GetGCHeap()->ShouldProceedWithFullGen2(shouldProceed == TRUE);
+
+            g_fGen2GCPending = FALSE;
+            
+            // TODO: REMOVE THIS! Just for debugging that the codepath works
+            if (shouldProceed == TRUE)
+            {
+                OutputDebugStringA("shouldProceed is true\n");
+            }
+            else
+            {
+                OutputDebugStringA("shouldProceed is false\n");
+            }
+            // TODO: REMOVE THIS!
+        }
+
 #if defined(__linux__) && defined(FEATURE_EVENT_TRACE)
         if (g_TriggerHeapDump && (CLRGetTickCount64() > (LastHeapDumpTime + LINUX_HEAP_DUMP_TIME_OUT)))
         {
@@ -676,19 +697,6 @@ VOID FinalizerThread::FinalizerThreadWorker(void *args)
         // consider itself satisfied by the drain that just completed.  This is
         // acceptable.
         SignalFinalizationDone(TRUE);
-
-        // TODO: REMOVE THIS! Just for testing that the codepath works
-        MethodDescCallSite doGen2Notification(METHOD__GC__DO_GEN2_NOTIFICATION);
-        BOOL val = doGen2Notification.Call_RetBool((ARG_SLOT *)NULL);
-        if (val == TRUE)
-        {
-            OutputDebugStringW(L"val is true\n");
-        }
-        else
-        {
-            OutputDebugStringW(L"val is false\n");
-        }
-        // TODO: REMOVE THIS!
     }
 }
 

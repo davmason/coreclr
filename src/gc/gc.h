@@ -140,6 +140,8 @@ extern VOLATILE(int32_t) g_fSuspensionPending;
 
 extern uint32_t g_yieldProcessorScalingFactor;
 
+extern bool g_fGen2ShouldProceed;
+
 ::IGCHandleManager*  CreateGCHandleManager();
 
 namespace WKS {

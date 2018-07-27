@@ -39,6 +39,8 @@ VOLATILE(int32_t) g_fSuspensionPending = 0;
 
 uint32_t g_yieldProcessorScalingFactor = 1;
 
+bool g_fGen2ShouldProceed = true;
+
 #ifdef FEATURE_MANUALLY_MANAGED_CARD_BUNDLES
 uint32_t* g_gc_card_bundle_table;
 #endif

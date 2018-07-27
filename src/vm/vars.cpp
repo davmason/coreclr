@@ -185,6 +185,8 @@ int g_IGCTrimCommit = 0;
 
 #endif
 
+Volatile<BOOL> g_fGen2GCPending = FALSE;
+
 BOOL g_fEnableETW = FALSE;
 
 BOOL g_fEnableARM = FALSE;

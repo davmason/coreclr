@@ -59,6 +59,12 @@ inline void GCToEEInterface::GcDone(int condemned)
     g_theGCToCLR->GcDone(condemned);
 }
 
+inline void GCToEEInterface::SetGen2Pending()
+{
+    assert(g_theGCToCLR != nullptr);
+    g_theGCToCLR->SetGen2Pending();
+}
+
 inline bool GCToEEInterface::RefCountedHandleCallbacks(Object * pObject)
 {
     assert(g_theGCToCLR != nullptr);
