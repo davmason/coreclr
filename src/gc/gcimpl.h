@@ -95,8 +95,6 @@ public:
     
     void SetYieldProcessorScalingFactor(uint32_t yieldProcessorScalingFactor);
 
-    void ShouldProceedWithFullGen2(bool fProceed);
-
     void SetWaitForGCEvent();
     void ResetWaitForGCEvent();
 

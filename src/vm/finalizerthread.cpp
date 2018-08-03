@@ -563,12 +563,12 @@ VOID FinalizerThread::FinalizerThreadWorker(void *args)
 
         WaitForFinalizerEvent (hEventFinalizer);
 
-        if (g_fGen2GCPending == FALSE)
+        if (g_fGen2GCPending == TRUE)
         {
+            OutputDebugStringA("Calling gen2 notifications\n");
+            
             MethodDescCallSite doGen2Notification(METHOD__GC__DO_GEN2_NOTIFICATION);
             BOOL shouldProceed = doGen2Notification.Call_RetBool((ARG_SLOT *)NULL);
-
-            GCHeapUtilities::GetGCHeap()->ShouldProceedWithFullGen2(shouldProceed == TRUE);
 
             g_fGen2GCPending = FALSE;
             

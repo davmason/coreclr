@@ -15141,6 +15141,20 @@ exit:
         }
     }
 
+    if (n == max_generation)// && *blocking_collection_p == TRUE)
+    {
+        if (g_fHasGen2NotificationOccurred)
+        {
+            g_fHasGen2NotificationOccurred = false;
+        }
+        else
+        {
+            n = 1;
+            GCToEEInterface::SetGen2Pending();
+            g_fHasGen2NotificationOccurred = true;
+        }
+    }
+
     if (n == max_generation && GCToEEInterface::ForceFullGCToBeBlocking())
     {
 #ifdef BACKGROUND_GC

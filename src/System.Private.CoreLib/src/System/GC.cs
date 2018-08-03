@@ -73,14 +73,6 @@ namespace System
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal static extern int SetGCLatencyMode(int newLatencyMode);
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        internal static extern void GetMemoryInfo(out uint highMemLoadThreshold,
-                                                  out ulong totalPhysicalMem,
-                                                  out uint lastRecordedMemLoad,
-                                                  // The next two are size_t
-                                                  out UIntPtr lastRecordedHeapSize,
-                                                  out UIntPtr lastRecordedFragmentation);
-
         [DllImport(JitHelpers.QCall, CharSet = CharSet.Unicode)]
         internal static extern int _StartNoGCRegion(long totalSize, bool lohSizeKnown, long lohSize, bool disallowFullBlockingGC);
 
@@ -157,6 +149,13 @@ namespace System
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public static extern int GetGeneration(object obj);
 
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern void GetMemoryInfo(out uint highMemLoadThreshold,
+                                                  out ulong totalPhysicalMem,
+                                                  out uint lastRecordedMemLoad,
+                                                  // The next two are size_t
+                                                  out UIntPtr lastRecordedHeapSize,
+                                                  out UIntPtr lastRecordedFragmentation);
 
         // Forces a collection of all generations from 0 through Generation.
         //
