@@ -565,23 +565,13 @@ VOID FinalizerThread::FinalizerThreadWorker(void *args)
 
         if (g_fGen2GCPending == TRUE)
         {
+            // TODO: REMOVE THIS! Just for debugging that the codepath works
             OutputDebugStringA("Calling gen2 notifications\n");
-            
+
             MethodDescCallSite doGen2Notification(METHOD__GC__DO_GEN2_NOTIFICATION);
             BOOL shouldProceed = doGen2Notification.Call_RetBool((ARG_SLOT *)NULL);
 
             g_fGen2GCPending = FALSE;
-            
-            // TODO: REMOVE THIS! Just for debugging that the codepath works
-            if (shouldProceed == TRUE)
-            {
-                OutputDebugStringA("shouldProceed is true\n");
-            }
-            else
-            {
-                OutputDebugStringA("shouldProceed is false\n");
-            }
-            // TODO: REMOVE THIS!
         }
 
 #if defined(__linux__) && defined(FEATURE_EVENT_TRACE)
