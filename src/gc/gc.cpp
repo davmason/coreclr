@@ -15143,15 +15143,19 @@ exit:
 
     if (g_fHasGen2NotificationOccurred)
     {
-        n = max_generation;
-        *blocking_collection_p = TRUE;
-        g_fHasGen2NotificationOccurred = false;
+        if(g_fGen2ShouldProceed)
+        {
+            n = max_generation;
+            *blocking_collection_p = TRUE;
+        }
+
+        g_fHasGen2NotificationOccurred = FALSE;
     }
     else if (n == max_generation && *blocking_collection_p)
     {
         n = 1;
         GCToEEInterface::SetGen2Pending();
-        g_fHasGen2NotificationOccurred = true;
+        g_fHasGen2NotificationOccurred = TRUE;
     }
 
     if (n == max_generation && GCToEEInterface::ForceFullGCToBeBlocking())

@@ -141,6 +141,7 @@ extern VOLATILE(int32_t) g_fSuspensionPending;
 extern uint32_t g_yieldProcessorScalingFactor;
 
 extern BOOL g_fHasGen2NotificationOccurred;
+extern BOOL g_fGen2ShouldProceed;
 
 ::IGCHandleManager*  CreateGCHandleManager();
 

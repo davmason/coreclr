@@ -620,6 +620,11 @@ void GCHeap::SetYieldProcessorScalingFactor(uint32_t yieldProcessorScalingFactor
     g_yieldProcessorScalingFactor = yieldProcessorScalingFactor;
 }
 
+void GCHeap::ShouldProceedWithFullGen2(bool fProceed)
+{
+    g_fGen2ShouldProceed = fProceed;
+}
+
 void GCHeap::ControlEvents(GCEventKeyword keyword, GCEventLevel level)
 {
     GCEventStatus::Set(GCEventProvider_Default, keyword, level);

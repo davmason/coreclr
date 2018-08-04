@@ -594,7 +594,7 @@ VOID FinalizerThread::FinalizerThreadWorker(void *args)
 
             MethodDescCallSite doGen2Notification(METHOD__GC__DO_GEN2_NOTIFICATION);
             BOOL shouldProceed = doGen2Notification.Call_RetBool((ARG_SLOT *)NULL);
-
+            GCHeapUtilities::GetGCHeap()->ShouldProceedWithFullGen2(shouldProceed);
             g_fGen2GCPending = FALSE;
         }
 

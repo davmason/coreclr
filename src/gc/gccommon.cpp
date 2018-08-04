@@ -39,7 +39,8 @@ VOLATILE(int32_t) g_fSuspensionPending = 0;
 
 uint32_t g_yieldProcessorScalingFactor = 1;
 
-BOOL g_fHasGen2NotificationOccurred = true;
+BOOL g_fHasGen2NotificationOccurred = FALSE;
+BOOL g_fGen2ShouldProceed = TRUE;
 
 #ifdef FEATURE_MANUALLY_MANAGED_CARD_BUNDLES
 uint32_t* g_gc_card_bundle_table;
