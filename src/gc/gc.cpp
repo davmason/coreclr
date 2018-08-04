@@ -15141,17 +15141,17 @@ exit:
         }
     }
 
-    if (n == max_generation && *blocking_collection_p && !g_fHasGen2NotificationOccurred)
+    if (g_fHasGen2NotificationOccurred)
+    {
+        n = max_generation;
+        *blocking_collection_p = TRUE;
+        g_fHasGen2NotificationOccurred = false;
+    }
+    else if (n == max_generation && *blocking_collection_p)
     {
         n = 1;
         GCToEEInterface::SetGen2Pending();
         g_fHasGen2NotificationOccurred = true;
-    }
-    else
-    {
-        // When the next GC occurs after a Gen2 Notification, clear the flag so 
-        // we don't skip a notification accidentally
-        g_fHasGen2NotificationOccurred = false;
     }
 
     if (n == max_generation && GCToEEInterface::ForceFullGCToBeBlocking())
@@ -35157,6 +35157,8 @@ GCHeap::GarbageCollectGeneration (unsigned int gen, gc_reason reason)
 
     if (shouldRunFinalizer || g_fHasGen2NotificationOccurred)
     {
+        // The gen2 notification happes on the finalizer thread, and we need it to run
+        // if there is a pending notification.
         GCToEEInterface::EnableFinalization(TRUE);
     }
 

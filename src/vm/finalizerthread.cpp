@@ -563,17 +563,6 @@ VOID FinalizerThread::FinalizerThreadWorker(void *args)
 
         WaitForFinalizerEvent (hEventFinalizer);
 
-        if (g_fGen2GCPending == TRUE)
-        {
-            // TODO: REMOVE THIS! Just for debugging that the codepath works
-            OutputDebugStringA("Calling gen2 notifications\n");
-
-            MethodDescCallSite doGen2Notification(METHOD__GC__DO_GEN2_NOTIFICATION);
-            BOOL shouldProceed = doGen2Notification.Call_RetBool((ARG_SLOT *)NULL);
-
-            g_fGen2GCPending = FALSE;
-        }
-
 #if defined(__linux__) && defined(FEATURE_EVENT_TRACE)
         if (g_TriggerHeapDump && (CLRGetTickCount64() > (LastHeapDumpTime + LINUX_HEAP_DUMP_TIME_OUT)))
         {
@@ -597,6 +586,17 @@ VOID FinalizerThread::FinalizerThreadWorker(void *args)
         JitHost::Reclaim();
 
         GetFinalizerThread()->DisablePreemptiveGC();
+
+        if (g_fGen2GCPending == TRUE)
+        {
+            // TODO: REMOVE THIS! Just for debugging that the codepath works
+            OutputDebugStringA("Calling gen2 notifications\n");
+
+            MethodDescCallSite doGen2Notification(METHOD__GC__DO_GEN2_NOTIFICATION);
+            BOOL shouldProceed = doGen2Notification.Call_RetBool((ARG_SLOT *)NULL);
+
+            g_fGen2GCPending = FALSE;
+        }
 
 #ifdef _DEBUG
         // <TODO> workaround.  make finalization very lazy for gcstress 3 or 4.  
