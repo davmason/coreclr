@@ -14493,6 +14493,23 @@ int gc_heap::joined_generation_to_condemn (BOOL should_evaluate_elevation,
         settings.elevation_locked_count = 0;
     }
 
+    if (g_fHasGen2NotificationOccurred)
+    {
+        if(g_fGen2ShouldProceed)
+        {
+            n = max_generation;
+            *blocking_collection_p = TRUE;
+        }
+
+        g_fHasGen2NotificationOccurred = FALSE;
+    }
+    else if (n == max_generation && *blocking_collection_p)
+    {
+        n = 1;
+        GCToEEInterface::SetGen2Pending();
+        g_fHasGen2NotificationOccurred = TRUE;
+    }
+
 #ifdef STRESS_HEAP
 #ifdef BACKGROUND_GC
     // We can only do Concurrent GC Stress if the caller did not explicitly ask for all
@@ -15139,23 +15156,6 @@ exit:
         {
             assert (n >= 1);
         }
-    }
-
-    if (g_fHasGen2NotificationOccurred)
-    {
-        if(g_fGen2ShouldProceed)
-        {
-            n = max_generation;
-            *blocking_collection_p = TRUE;
-        }
-
-        g_fHasGen2NotificationOccurred = FALSE;
-    }
-    else if (n == max_generation && *blocking_collection_p)
-    {
-        n = 1;
-        GCToEEInterface::SetGen2Pending();
-        g_fHasGen2NotificationOccurred = TRUE;
     }
 
     if (n == max_generation && GCToEEInterface::ForceFullGCToBeBlocking())
