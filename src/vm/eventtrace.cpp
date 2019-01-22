@@ -6627,6 +6627,37 @@ VOID ETW::MethodLog::SendMethodEvent(MethodDesc *pMethodDesc, DWORD dwEventOptio
             (dwEventOptions & ETW::EnumerationLog::EnumerationStructs::NgenMethodDCStart) ||
             (dwEventOptions & ETW::EnumerationLog::EnumerationStructs::NgenMethodDCEnd));
     }
+
+    CodeHeader *header = EEJitManager::GetCodeHeader(codeInfo.GetMethodToken());
+
+    uint32_t methodDescSize = (uint32_t)pMethodDesc->SizeOf();
+    uint32_t codeHeaderSize = sizeof(CodeHeader);
+
+    GcInfoDecoder gcDecoder(codeInfo.GetJitManager()->GetGCInfoToken(codeInfo.GetMethodToken()), DECODE_EVERYTHING, 0);
+    uint32_t gcInfoSize = (uint32_t)gcDecoder.GetNumBytesRead();
+
+    uint32_t debugInfoSize = 0;
+    if (header->GetDebugInfo() != NULL)
+    {
+        NibbleReader reader(header->GetDebugInfo(), 64);
+        debugInfoSize = reader.ReadEncodedU32() + reader.ReadEncodedU32(); // sizeof boundaries + sizeof vars
+    }
+
+    uint32_t ehInfoSize = 0;
+    if (header->GetEHInfo() != NULL)
+    {
+        ehInfoSize = EE_ILEXCEPTION::Size(header->GetEHInfo()->EHCount());
+    }
+
+    uint32_t data[7];
+    data[0] = ulMethodToken;
+    data[1] = ulMethodSize;
+    data[2] = methodDescSize;
+    data[3] = codeHeaderSize;
+    data[4] = gcInfoSize;
+    data[5] = debugInfoSize;
+    data[6] = ehInfoSize;
+    FireEtwGCDynamicEvent(L"MethodNativeSizes", sizeof(data), reinterpret_cast<const BYTE *>(data), GetClrInstanceId());
 }
 
 //---------------------------------------------------------------------------------------
