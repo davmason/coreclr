@@ -6631,7 +6631,11 @@ VOID ETW::MethodLog::SendMethodEvent(MethodDesc *pMethodDesc, DWORD dwEventOptio
     CodeHeader *header = EEJitManager::GetCodeHeader(codeInfo.GetMethodToken());
 
     uint32_t methodDescSize = (uint32_t)pMethodDesc->SizeOf();
-    uint32_t codeHeaderSize = sizeof(CodeHeader);
+    uint32_t codeHeaderSize = sizeof(CodeHeader) + sizeof(RealCodeHeader);
+#if defined(WIN64EXCEPTIONS)
+    uint32_t unwindInfoSize = header->GetNumberOfUnwindInfos() * sizeof(T_RUNTIME_FUNCTION);
+    codeHeaderSize += unwindInfoSize;
+#endif // WIN64EXCEPTIONS}
 
     GcInfoDecoder gcDecoder(codeInfo.GetJitManager()->GetGCInfoToken(codeInfo.GetMethodToken()), DECODE_EVERYTHING, 0);
     uint32_t gcInfoSize = (uint32_t)gcDecoder.GetNumBytesRead();
