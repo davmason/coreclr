@@ -3932,13 +3932,23 @@ interface ICorProfilerInfo8 : ICorProfilerInfo7
 interface ICorProfilerInfo9 : ICorProfilerInfo8
 {
     //Given functionId + rejitId, enumerate the native code start address of all jitted versions of this code that currently exist
-    HRESULT GetNativeCodeStartAddresses(FunctionID functionID, ReJITID reJitId, ULONG32 cCodeStartAddresses, ULONG32 *pcCodeStartAddresses, UINT_PTR codeStartAddresses[]);
+    HRESULT GetNativeCodeStartAddresses( [in]  FunctionID functionID,
+                                         [in]  ReJITID reJitId,
+                                         [in]  ULONG32 cCodeStartAddresses,
+                                         [out] ULONG32 *pcCodeStartAddresses,
+                                         [out] UINT_PTR codeStartAddresses[]);
 
     //Given the native code start address, return the native->IL mapping information for this jitted version of the code
-    HRESULT GetILToNativeMapping3(UINT_PTR pNativeCodeStartAddress, ULONG32 cMap, ULONG32 *pcMap, COR_DEBUG_IL_TO_NATIVE_MAP map[]);
+    HRESULT GetILToNativeMapping3( [in]  UINT_PTR pNativeCodeStartAddress,
+                                   [in]  ULONG32 cMap,
+                                   [out] ULONG32 *pcMap,
+                                   [out] COR_DEBUG_IL_TO_NATIVE_MAP map[]);
 
     //Given the native code start address, return the the blocks of virtual memory that store this code (method code is not necessarily stored in a single contiguous memory region)
-    HRESULT GetCodeInfo4(UINT_PTR pNativeCodeStartAddress, ULONG32 cCodeInfos, ULONG32* pcCodeInfos, COR_PRF_CODE_INFO codeInfos[]);
+    HRESULT GetCodeInfo4( [in]  UINT_PTR pNativeCodeStartAddress,
+                          [in]  ULONG32 cCodeInfos,
+                          [out] ULONG32* pcCodeInfos,
+                          [out] COR_PRF_CODE_INFO codeInfos[]);
 };
 
 [
