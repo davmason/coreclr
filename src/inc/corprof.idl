@@ -3903,7 +3903,7 @@ interface ICorProfilerInfo8 : ICorProfilerInfo7
                                [out] ReJITID * pReJitId);
 
     /*
-    * Retrieves informaiton about dynamic methods
+    * Retrieves information about dynamic methods
     *
     * Certain methods like IL Stubs or LCG do not have
     * associated metadata that can be retrieved using the IMetaDataImport APIs.
@@ -3960,13 +3960,16 @@ interface ICorProfilerInfo9 : ICorProfilerInfo8
 interface ICorProfilerInfo10 : ICorProfilerInfo9
 {
     // Given an ObjectID, callback and clientData, enumerates each object reference (if any).
-    HRESULT EnumerateObjectReferences(ObjectID objectId, ObjectReferenceCallback callback, void* clientData);
+    HRESULT EnumerateObjectReferences( [in] ObjectID objectId,
+                                       [in] ObjectReferenceCallback callback,
+                                       [in] void* clientData);
 
     // Given an ObjectID, determines whether it is in a read only segment.
-    HRESULT IsFrozenObject(ObjectID objectId, BOOL *pbFrozen);
+    HRESULT IsFrozenObject( [in]  ObjectID objectId,
+                            [out] BOOL *pbFrozen);
 
     // Gets the value of the configured LOH Threshold.
-    HRESULT GetLOHObjectSizeThreshold(DWORD *pThreshold);
+    HRESULT GetLOHObjectSizeThreshold( [out] DWORD *pThreshold );
 
     /*
      * This method will ReJIT the methods requested, as well as any inliners
@@ -3979,11 +3982,10 @@ interface ICorProfilerInfo10 : ICorProfilerInfo9
      * not present to monitor inlining. This method can be called to guarantee
      * that the full set of inliners will be ReJITted as well.
      */
-    HRESULT RequestReJITWithInliners(
-                [in]                       DWORD       dwRejitFlags,
-                [in]                       ULONG       cFunctions,
-                [in, size_is(cFunctions)]  ModuleID    moduleIds[],
-                [in, size_is(cFunctions)]  mdMethodDef methodIds[]);
+    HRESULT RequestReJITWithInliners( [in]                       DWORD       dwRejitFlags,
+                                      [in]                       ULONG       cFunctions,
+                                      [in, size_is(cFunctions)]  ModuleID    moduleIds[],
+                                      [in, size_is(cFunctions)]  mdMethodDef methodIds[]);
 
     // Suspend the runtime without performing a GC.
     HRESULT SuspendRuntime();
