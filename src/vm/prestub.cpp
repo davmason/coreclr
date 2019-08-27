@@ -1133,28 +1133,9 @@ BOOL PrepareCodeConfig::SetNativeCode(PCODE pCode, PCODE * ppAlternateCodeToUse)
 {
     LIMITED_METHOD_CONTRACT;
 
-    // If this function had already been requested for rejit (before its original
-    // code was jitted), then give the CodeVersionManager a chance to jump-stamp the
-    // code we just compiled so the first thread entering the function will jump
-    // to the prestub and trigger the rejit. Note that the PublishMethodHolder takes
-    // a lock to avoid a particular kind of rejit race. See
-    // code:CodeVersionManager::PublishMethodHolder::PublishMethodHolder#PublishCode for
-    // details on the rejit race.
-    // 
-    if (m_pMethodDesc->IsVersionableWithJumpStamp())
+    if (m_pMethodDesc->SetNativeCodeInterlocked(pCode, NULL))
     {
-        PublishMethodHolder publishWorker(GetMethodDesc(), pCode);
-        if (m_pMethodDesc->SetNativeCodeInterlocked(pCode, NULL))
-        {
-            return TRUE;
-        }
-    }
-    else
-    {
-        if (m_pMethodDesc->SetNativeCodeInterlocked(pCode, NULL))
-        {
-            return TRUE;
-        }
+        return TRUE;
     }
 
     *ppAlternateCodeToUse = m_pMethodDesc->GetNativeCode();
@@ -1954,11 +1935,10 @@ PCODE MethodDesc::DoPrestub(MethodTable *pDispatchingMT)
     /***************************  VERSIONABLE CODE    *********************/
 
     BOOL fIsPointingToPrestub = IsPointingToPrestub();
-    bool fIsVersionableWithoutJumpStamp = false;
+    bool fIsVersionable = false;
 #ifdef FEATURE_CODE_VERSIONING
-    fIsVersionableWithoutJumpStamp = IsVersionableWithoutJumpStamp();
-    if (fIsVersionableWithoutJumpStamp ||
-        (!fIsPointingToPrestub && IsVersionableWithJumpStamp()))
+    fIsVersionable = IsVersionable();
+    if (fIsVersionable)
     {
         pCode = GetCodeVersionManager()->PublishVersionableCodeIfNecessary(this, fCanBackpatchPrestub);
 
@@ -2007,7 +1987,7 @@ PCODE MethodDesc::DoPrestub(MethodTable *pDispatchingMT)
 #endif // defined(FEATURE_SHARE_GENERIC_CODE)
     else if (IsIL() || IsNoMetadata())
     {
-        if (!IsNativeCodeStableAfterInit() && (!fIsVersionableWithoutJumpStamp || IsVersionableWithPrecode()))
+        if (!IsNativeCodeStableAfterInit() && IsVersionableWithPrecode())
         {
             GetOrCreatePrecode();
         }
@@ -2068,9 +2048,9 @@ PCODE MethodDesc::DoPrestub(MethodTable *pDispatchingMT)
 
     if (pCode != NULL)
     {
-        if (fIsVersionableWithoutJumpStamp)
+        if (fIsVersionable)
         {
-            // Methods versionable without a jump stamp should not get here unless there was a failure. There may have been a
+            // Methods that are versionable should not get here unless there was a failure. There may have been a
             // failure to update the code versions above for some reason. Don't backpatch this time and try again next time.
             return pCode;
         }
