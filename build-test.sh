@@ -24,7 +24,7 @@ build_test_wrappers()
         __MsbuildErr="/fileloggerparameters2:\"ErrorsOnly;LogFile=${__BuildErr}\""
         __Logging="$__MsbuildLog $__MsbuildWrn $__MsbuildErr /consoleloggerparameters:$buildVerbosity"
 
-        nextCommand="\"${__DotNetCli}\" msbuild \"${__ProjectDir}/tests/src/runtest.proj\" /nodereuse:false /p:BuildWrappers=true /p:TargetsWindows=false $__Logging /p:__BuildOS=$__BuildOS /p:__BuildType=$__BuildType /p:__BuildArch=$__BuildArch"
+        nextCommand="\"${__DotNetCli}\" msbuild \"${__ProjectDir}/tests/src/runtest.proj\" /nodereuse:false /p:BuildWrappers=true /p:TargetsWindows=false $__Logging /p:__BuildOS=$__BuildOS /p:__BuildType=$__BuildType /p:__BuildArch=$__BuildArch" $__SkipFXRestoreArg
         eval $nextCommand
 
         if [ $? -ne 0 ]; then
@@ -130,16 +130,6 @@ generate_layout()
     if [[ $__DoCrossgen != 0 || $__DoCrossgen2 != 0 ]]; then
         precompile_coreroot_fx
     fi
-}
-
-patch_corefx_libraries()
-{
-    echo "${__MsgPrefix}Patching CORE_ROOT: '${CORE_ROOT}' with CoreFX libaries from enlistment '${__LocalCoreFXPath}"
-
-    patchCoreFXArguments=("-clr_core_root" "${CORE_ROOT}" "-fx_root" "${__LocalCoreFXPath}" "-arch" "${__BuildArch}" "-build_type" "${__BuildType}")
-    scriptPath="$__ProjectDir/tests/scripts"
-    echo "python ${scriptPath}/patch-corefx.py ${patchCoreFXArguments[@]}"
-    $__Python "${scriptPath}/patch-corefx.py" "${patchCoreFXArguments[@]}"
 }
 
 precompile_coreroot_fx()
@@ -372,10 +362,6 @@ build_Tests()
     if [ $__SkipGenerateLayout != 1 ]; then
         generate_layout
     fi
-
-    if [ ! -z "$__LocalCoreFXPath" ]; then
-        patch_corefx_libraries
-    fi
 }
 
 build_MSBuild_projects()
@@ -428,6 +414,7 @@ build_MSBuild_projects()
             buildArgs+=("${__UnprocessedBuildArgs[@]}")
             buildArgs+=("\"/p:CopyNativeProjectBinaries=${__CopyNativeProjectsAfterCombinedTestBuild}\"");
             buildArgs+=("/p:__SkipPackageRestore=true");
+            buildArgs+=("$__SkipFXRestoreArg")
 
             # Disable warnAsError - coreclr issue 19922
             nextCommand="\"$__RepoRootDir/eng/common/msbuild.sh\" $__ArcadeScriptArgs --warnAsError false ${buildArgs[@]}"
@@ -460,6 +447,7 @@ build_MSBuild_projects()
         buildArgs+=("${extraBuildParameters[@]}")
         buildArgs+=("${__CommonMSBuildArgs}")
         buildArgs+=("${__UnprocessedBuildArgs[@]}")
+        buildArgs+=("$__SkipFXRestoreArg")
 
         # Disable warnAsError - coreclr issue 19922
         nextCommand="\"$__RepoRootDir/eng/common/msbuild.sh\" $__ArcadeScriptArgs --warnAsError false ${buildArgs[@]}"
@@ -639,6 +627,7 @@ handle_arguments() {
         localcorefxpath)
             if [ -n "$2" ]; then
                 __LocalCoreFXPath="$2"
+                __SkipFXRestoreArg="/p:__SkipFXRestore=true"
                 shift
             else
                 echo "ERROR: 'localcorefxpath' requires a non-empty option argument"
@@ -697,6 +686,8 @@ __VerboseBuild=0
 __cmakeargs=""
 __msbuildonunsupportedplatform=0
 __priority1=
+__LocalCoreFXPath=
+__SkipFXRestoreArg=
 CORE_ROOT=
 
 source "$__ProjectRoot"/_build-commons.sh

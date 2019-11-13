@@ -569,22 +569,6 @@ if defined __DoCrossgen2 (
 
 rd /s /q "%CORE_ROOT_STAGE%"
 
-
-REM =========================================================================================
-REM ===
-REM === Copy CoreFX assemblies if needed.
-REM ===
-REM =========================================================================================
-
-if NOT "%__LocalCoreFXPath%"=="" (
-    echo Patch CoreFX from %__LocalCoreFXPath%
-    set NEXTCMD=python "%__ProjectDir%\tests\scripts\patch-corefx.py" -clr_core_root "%CORE_ROOT%"^
-    -fx_root "%__LocalCoreFXPath%" -arch %__BuildArch% -build_type %__BuildType%
-    echo !NEXTCMD!
-    !NEXTCMD!
-)
-
-
 REM =========================================================================================
 REM ===
 REM === All builds complete!
